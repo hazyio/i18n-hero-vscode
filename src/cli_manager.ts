@@ -6,6 +6,7 @@ import {
   RevealOutputChannelOn,
   ServerOptions,
 } from "vscode-languageclient/node";
+import { spawn } from "child_process";
 import {
   appendLineToOutputChannel,
   makeLogOutputChannel,
@@ -14,12 +15,49 @@ import {
 } from "./output";
 import { getConfigLocation } from "./utils";
 let client: LanguageClient;
+export function runCommand(
+  args: string[],
+  showSuccessMessage: boolean = false,
+) {
+  let cc = {
+    command: cliLocation(),
+    args: args,
+  };
 
+  // Get the workspace root directory context
+  const cwd = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+
+  // Execute the binary
+  const process = spawn(cc.command, cc.args, { cwd });
+
+  let stdout = "";
+  let stderr = "";
+
+  process.stdout.on("data", (data) => (stdout += data.toString()));
+  process.stderr.on("data", (data) => (stderr += data.toString()));
+
+  process.on("close", (code) => {
+    if (code === 0) {
+      if (showSuccessMessage) {
+        showMessageInfo(`Success: ${stdout}`);
+      }
+    } else {
+      showMessageError(`Error (Code ${code}): ${stderr}`);
+    }
+  });
+
+  process.on("error", (err) => {
+    showMessageError(`Failed to execute binary: ${err.message}`);
+  });
+}
+export function cliLocation(): string {
+  return "/home/daniel/Projects/i18n-hero/target/debug/i18n-hero";
+}
 export async function start() {
   let config = await getConfigLocation();
   if (!config) {
     showMessageError(
-      "i18n-hero LSP cannot start because the config file location is not set. Please set it in the extension settings or use the init in command palette.",
+      "i18n-hero LSP cannot start because the config file location is not set. Please set it in the extension settings or use the Create i18n-hero.toml command in the command palette.",
     );
     return;
   }
@@ -28,8 +66,7 @@ export async function start() {
     return;
   }
   const serverOptions: ServerOptions = {
-    command:
-      "/home/daniel/Projects/i18n-hero/i18n-hero-cli/target/debug/i18n-hero-cli",
+    command: cliLocation(),
     args: [
       "lsp",
       "--config",

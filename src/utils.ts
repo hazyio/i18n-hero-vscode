@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { appendLineToOutputChannel } from "./output";
 
 export async function configAvailable(): Promise<boolean> {
   const configLocation = await getConfigLocation();
@@ -25,24 +26,39 @@ export async function getConfigLocation(): Promise<
 > {
   let workspaceFolder = getCurrentWorkingDirectory();
   if (!workspaceFolder) {
+    appendLineToOutputChannel("No workspace folder found");
     return undefined;
   }
   // only get the config location for the current workspace folder if it exists
-  const configLocation = vscode.workspace
+  const configSetInSettings = vscode.workspace
     .getConfiguration("i18n-hero-vscode", workspaceFolder.uri)
     .get<string>("configLocation");
-  if (!configLocation) {
-    return undefined;
+  if (configSetInSettings) {
+    let buildConfigLocation =
+      workspaceFolder.uri.fsPath + "/" + configSetInSettings;
+    let configExists = await vscode.workspace.fs.stat(
+      vscode.Uri.file(buildConfigLocation),
+    );
+    if (!configExists) {
+      return undefined;
+    }
+
+    return { workspaceFolder, configLocation: configSetInSettings };
   }
-  let buildConfigLocation = workspaceFolder.uri.fsPath + "/" + configLocation;
+  appendLineToOutputChannel("Config is not set in .vscode");
+
+  const configInWorkspaceDir =
+    workspaceFolder.uri.fsPath + "/" + "i18n-hero.toml";
   let configExists = await vscode.workspace.fs.stat(
-    vscode.Uri.file(buildConfigLocation),
+    vscode.Uri.file(configInWorkspaceDir),
   );
   if (!configExists) {
     return undefined;
   }
-
-  return { workspaceFolder, configLocation };
+  return {
+    workspaceFolder: workspaceFolder,
+    configLocation: "i18n-hero.toml",
+  };
 }
 
 export function setConfigLocation(location: string) {}

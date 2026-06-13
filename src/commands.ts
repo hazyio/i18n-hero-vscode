@@ -1,11 +1,12 @@
 import * as vscode from "vscode";
-import * as lspManager from "./lsp_manager";
+import * as cliManager from "./cli_manager";
 import * as output from "./output";
+import { getCurrentWorkingDirectory } from "./utils";
 export function startExtensionServices() {
-  lspManager.start();
+  cliManager.start();
 }
 export function stopExtensionServices() {
-  lspManager.stop();
+  cliManager.stop();
 }
 
 export function registerCommands(context: vscode.ExtensionContext) {
@@ -25,7 +26,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 
 function restart() {
   try {
-    lspManager.restart();
+    cliManager.restart();
   } catch (err) {
     output.append(
       `restart(): threw: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`,
@@ -33,17 +34,27 @@ function restart() {
   }
 }
 function init() {
-  try {
-    lspManager.restart();
-  } catch (err) {
-    output.append(
-      `restart(): threw: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`,
-    );
-  }
+  const terminal = vscode.window.createTerminal("i18n-hero init");
+  terminal.show();
+  terminal.sendText(`${cliManager.cliLocation()} init`);
+  //   let cwd = getCurrentWorkingDirectory();
+  //   if (!cwd) {
+  //     output.showMessageError("Failed to get current working directory.");
+  //     return;
+  //   }
+  //   cliManager.runCommand(["init", "--dir", cwd.uri.fsPath], true);
+
+  //   try {
+  //     cliManager.restart();
+  //   } catch (err) {
+  //     output.append(
+  //       `restart(): threw: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`,
+  //     );
+  //   }
 }
 function setConfig() {
   try {
-    lspManager.restart();
+    cliManager.restart();
   } catch (err) {
     output.append(
       `restart(): threw: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`,
