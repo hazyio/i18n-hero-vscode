@@ -11,14 +11,24 @@
     "Other",
     "Linters"
   ],
-  "repository": "https://github.com/hazyio/i18n-hero/tree/main/extensions/i18n-hero-vscode",
-  "activationEvents": [],
+  "repository": "https://github.com/hazyio/i18n-hero-vscode",
+  "activationEvents": [
+    "workspaceContains:**/i18n-hero.toml"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "i18n-hero-vscode.restart",
         "title": "i18n-hero-vscode: Restart Extension"
+      },
+      {
+        "command": "i18n-hero-vscode.init",
+        "title": "i18n-hero-vscode: Initialize Extension"
+      },
+      {
+        "command": "i18n-hero-vscode.set-config",
+        "title": "i18n-hero-vscode: Set Config Location"
       }
     ]
   },
