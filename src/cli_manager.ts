@@ -69,8 +69,6 @@ export async function start() {
     command: cliLocation(),
     args: [
       "lsp",
-      "--config",
-      config.configLocation,
       "--workspace",
       config.workspaceFolder.uri.fsPath,
     ],

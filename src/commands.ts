@@ -33,18 +33,4 @@ function init() {
   const terminal = vscode.window.createTerminal("i18n-hero init");
   terminal.show();
   terminal.sendText(`${cliManager.cliLocation()} init`);
-  //   let cwd = getCurrentWorkingDirectory();
-  //   if (!cwd) {
-  //     output.showMessageError("Failed to get current working directory.");
-  //     return;
-  //   }
-  //   cliManager.runCommand(["init", "--dir", cwd.uri.fsPath], true);
-
-  //   try {
-  //     cliManager.restart();
-  //   } catch (err) {
-  //     output.append(
-  //       `restart(): threw: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`,
-  //     );
-  //   }
 }
