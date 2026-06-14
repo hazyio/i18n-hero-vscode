@@ -1,5 +1,8 @@
 import * as vscode from "vscode";
+import * as fs from "fs/promises";
+
 import { appendLineToOutputChannel } from "./output";
+import path from "path";
 
 export async function configAvailable(): Promise<boolean> {
   const configLocation = await getConfigLocation();
@@ -15,7 +18,6 @@ export async function configAvailable(): Promise<boolean> {
  *
  * Behavior:
  * - Resolves the current workspace folder via getCurrentWorkingDirectory().
- * - Reads the "i18n-hero-vscode.configLocation" workspace setting scoped to that folder.
  * - If the setting is missing or empty, returns undefined.
  * - Attempts to verify that the resolved file exists; if it doesn't, returns undefined.
 
@@ -29,36 +31,22 @@ export async function getConfigLocation(): Promise<
     appendLineToOutputChannel("No workspace folder found");
     return undefined;
   }
-  // only get the config location for the current workspace folder if it exists
-  const configSetInSettings = vscode.workspace
-    .getConfiguration("i18n-hero-vscode", workspaceFolder.uri)
-    .get<string>("configLocation");
-  if (configSetInSettings) {
-    let buildConfigLocation =
-      workspaceFolder.uri.fsPath + "/" + configSetInSettings;
-    let configExists = await vscode.workspace.fs.stat(
-      vscode.Uri.file(buildConfigLocation),
-    );
-    if (!configExists) {
-      return undefined;
-    }
 
-    return { workspaceFolder, configLocation: configSetInSettings };
-  }
-  appendLineToOutputChannel("Config is not set in .vscode");
-
-  const configInWorkspaceDir =
-    workspaceFolder.uri.fsPath + "/" + "i18n-hero.toml";
-  let configExists = await vscode.workspace.fs.stat(
-    vscode.Uri.file(configInWorkspaceDir),
+  const configInWorkspaceDir = path.join(
+    workspaceFolder.uri.fsPath,
+    "i18n-hero.toml",
   );
-  if (!configExists) {
+  try {
+    await fs.access(configInWorkspaceDir);
+    appendLineToOutputChannel("Config file exists");
+    return {
+      workspaceFolder: workspaceFolder,
+      configLocation: "i18n-hero.toml",
+    };
+  } catch {
+    appendLineToOutputChannel("Config file not found");
     return undefined;
   }
-  return {
-    workspaceFolder: workspaceFolder,
-    configLocation: "i18n-hero.toml",
-  };
 }
 
 export function setConfigLocation(location: string) {}

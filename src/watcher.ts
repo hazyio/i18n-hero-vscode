@@ -3,11 +3,10 @@ import { startExtensionServices, stopExtensionServices } from "./commands";
 import { getConfigLocation } from "./utils";
 export function registerConfigWatcher(context: vscode.ExtensionContext) {
   getConfigLocation().then((configLocation) => {
-    let fileName = "**/i18n-hero.toml";
+    const fileName = `**/${configLocation}`;
     if (configLocation) {
+      // If a config location is specified, start extesion
       startExtensionServices();
-      // If a config location is specified, watch that specific file instead of the default
-      fileName = `**/${configLocation}`;
     }
     //   Create a filesystem watcher
     const watcher = vscode.workspace.createFileSystemWatcher(fileName);

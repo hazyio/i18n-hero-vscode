@@ -20,15 +20,11 @@
     "commands": [
       {
         "command": "i18n-hero-vscode.restart",
-        "title": "i18n-hero-vscode: Restart Extension"
+        "title": "i18n-hero-vscode: Restart Language Server"
       },
       {
         "command": "i18n-hero-vscode.init",
         "title": "i18n-hero-vscode: Create i18n-hero.toml"
-      },
-      {
-        "command": "i18n-hero-vscode.set-config",
-        "title": "i18n-hero-vscode: Set Config Location"
       }
     ]
   },

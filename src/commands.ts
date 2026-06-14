@@ -18,10 +18,6 @@ export function registerCommands(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("i18n-hero-vscode.restart", restart),
   );
-  // Register the set-config command
-  context.subscriptions.push(
-    vscode.commands.registerCommand("i18n-hero-vscode.set-config", setConfig),
-  );
 }
 
 function restart() {
@@ -51,13 +47,4 @@ function init() {
   //       `restart(): threw: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`,
   //     );
   //   }
-}
-function setConfig() {
-  try {
-    cliManager.restart();
-  } catch (err) {
-    output.append(
-      `restart(): threw: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`,
-    );
-  }
 }

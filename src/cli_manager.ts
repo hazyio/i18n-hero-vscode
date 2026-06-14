@@ -55,9 +55,9 @@ export function cliLocation(): string {
 }
 export async function start() {
   let config = await getConfigLocation();
-  if (!config) {
+  if (config === undefined) {
     showMessageError(
-      "i18n-hero LSP cannot start because the config file location is not set. Please set it in the extension settings or use the Create i18n-hero.toml command in the command palette.",
+      "i18n-hero LSP cannot start because the config file location is not set. Use the Create i18n-hero.toml command in the command palette to create it.",
     );
     return;
   }
